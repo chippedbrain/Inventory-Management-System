@@ -1,6 +1,8 @@
 from sqlmodel import Field, SQLModel
 from datetime import datetime
 from enum import Enum
+from datetime import datetime
+from sqlalchemy import Column, DateTime
 
 class CheckoutStatus(str, Enum):
     reserved = "reserved"
@@ -40,8 +42,8 @@ class Job(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
     name: str
     client_name: str
-    start_date: datetime
-    end_date: datetime
+    start_date: datetime = Field(sa_column=Column(DateTime(timezone=True)))
+    end_date: datetime = Field(sa_column=Column(DateTime(timezone=True)))
     status: JobStatus = JobStatus.planned
 
     
@@ -49,4 +51,27 @@ class JobGearUnit(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
     job_id: int | None = Field(default=None, foreign_key="job.id")
     gear_unit_id: int | None = Field(default=None, foreign_key="gearunit.id")
+    status: CheckoutStatus = CheckoutStatus.reserved
+
+# Pydantic models for request validation
+class GearUnitCreate(SQLModel):
+    gear_item_id: int
+    serial_number: str
+    status: GearUnitStatus = GearUnitStatus.available
+
+class GearItemCreate(SQLModel):
+    name: str
+    manufacturer: str
+    model : str
+
+class JobCreate(SQLModel):
+    name: str
+    client_name: str
+    start_date: datetime
+    end_date: datetime
+    status: JobStatus = JobStatus.planned
+
+class JobGearUnitCreate(SQLModel):
+    job_id: int
+    gear_unit_id: int
     status: CheckoutStatus = CheckoutStatus.reserved

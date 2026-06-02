@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlmodel import select
 
-from app.models import GearItem
+from app.models import GearItem, GearItemCreate
 from app.database import get_session
 
 router = APIRouter(
@@ -10,8 +10,9 @@ router = APIRouter(
     tags=["gear"]
 )
 
-@router.post("/", response_model=GearItem)
-async def create_gear_item(gear_item: GearItem, session: AsyncSession = Depends(get_session)):
+@router.post("/", response_model=GearItemCreate)
+async def create_gear_item(gear_item_data: GearItemCreate, session: AsyncSession = Depends(get_session)):
+    gear_item = GearItem.model_validate(gear_item_data)
     session.add(gear_item)
     await session.commit()
     await session.refresh(gear_item)
