@@ -2,8 +2,9 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlmodel import select
 
-from app.models import GearItem, GearItemCreate
+from app.models import GearItem, GearItemCreate, User
 from app.database import get_session
+from app.deps import get_current_user
 
 router = APIRouter(
     prefix="/gear",
@@ -11,7 +12,7 @@ router = APIRouter(
 )
 
 @router.post("/", response_model=GearItemCreate)
-async def create_gear_item(gear_item_data: GearItemCreate, session: AsyncSession = Depends(get_session)):
+async def create_gear_item(gear_item_data: GearItemCreate, session: AsyncSession = Depends(get_session), current_user: User = Depends(get_current_user)):
     gear_item = GearItem.model_validate(gear_item_data)
     session.add(gear_item)
     await session.commit()
@@ -19,7 +20,7 @@ async def create_gear_item(gear_item_data: GearItemCreate, session: AsyncSession
     return gear_item
 
 @router.get("/", response_model=list[GearItem])
-async def get_gear_items(session: AsyncSession = Depends(get_session)):
+async def get_gear_items(session: AsyncSession = Depends(get_session), current_user: User = Depends(get_current_user)):
     gear_items = await session.exec(select(GearItem))
     return gear_items.all()
 

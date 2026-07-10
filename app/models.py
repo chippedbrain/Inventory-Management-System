@@ -75,3 +75,11 @@ class JobGearUnitCreate(SQLModel):
     job_id: int
     gear_unit_id: int
     status: CheckoutStatus = CheckoutStatus.reserved
+    
+class UserCreate(SQLModel):
+    email: str
+    password: str
+    
+class UserLogin(SQLModel):
+    email: str
+    password: str
