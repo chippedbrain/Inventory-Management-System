@@ -1,7 +1,6 @@
 from sqlmodel import Field, SQLModel
 from datetime import datetime
 from enum import Enum
-from datetime import datetime
 from sqlalchemy import Column, DateTime
 
 class CheckoutStatus(str, Enum):
